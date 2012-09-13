@@ -2221,7 +2221,7 @@ __acquires(udc->lock)
 	}
 
 	/*stop charging upon reset */
-	if (udc->transceiver)
+	if (udc->transceiver && !udc->vbus_active)
 		usb_phy_set_power(udc->transceiver, 0);
 
 	retval = _gadget_stop_activity(&udc->gadget);
