@@ -120,7 +120,10 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 	struct cpufreq_freqs freqs;
 	struct cpu_freq *limit = &per_cpu(cpu_freq_info, policy->cpu);
 	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
+<<<<<<< HEAD
 	struct cpufreq_frequency_table *table;
+=======
+>>>>>>> c9d509d... msm: cpufreq: increase priority of thread that increases frequencies
 
 	if (limit->limits_init) {
 		if (new_freq > limit->allowed_max) {
@@ -157,6 +160,7 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 
 	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
 
+<<<<<<< HEAD
 	if (is_clk) {
 		unsigned long rate = new_freq * 1000;
 		rate = clk_round_rate(cpu_clk[policy->cpu], rate);
@@ -169,6 +173,9 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 		ret = acpuclk_set_rate(policy->cpu, new_freq, SETRATE_CPUFREQ);
 	}
 
+=======
+	ret = acpuclk_set_rate(policy->cpu, new_freq, SETRATE_CPUFREQ);
+>>>>>>> c9d509d... msm: cpufreq: increase priority of thread that increases frequencies
 	if (!ret)
 		cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 
