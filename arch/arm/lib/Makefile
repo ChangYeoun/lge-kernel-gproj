@@ -6,8 +6,13 @@
 
 lib-y		:= backtrace.o changebit.o csumipv6.o csumpartial.o   \
 		   csumpartialcopy.o csumpartialcopyuser.o clearbit.o \
+<<<<<<< HEAD
 		   delay.o delay-loop.o findbit.o memchr.o memcpy.o   \
 		   memmove.o memset.o memzero.o setbit.o              \
+=======
+		   delay.o findbit.o memchr.o		      \
+		   memset.o memzero.o setbit.o              \
+>>>>>>> c24fba8... lib/string & lib/memcpy: use GNU implementation.
 		   strncpy_from_user.o strnlen_user.o                 \
 		   strchr.o strrchr.o                                 \
 		   testchangebit.o testclearbit.o testsetbit.o        \
