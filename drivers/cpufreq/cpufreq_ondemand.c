@@ -125,6 +125,11 @@ static unsigned int dbs_enable;	/* number of CPUs using this policy */
 static DEFINE_MUTEX(dbs_mutex);
 
 static struct workqueue_struct *dbs_wq;
+<<<<<<< HEAD
+=======
+
+static DEFINE_PER_CPU(struct work_struct, dbs_refresh_work);
+>>>>>>> 5ade948... cpufreq: Use dedicated high-priority workqueues
 
 struct dbs_work_struct {
 	struct work_struct work;
@@ -982,6 +987,7 @@ static void do_dbs_timer(struct work_struct *work)
 			dbs_info->freq_lo, CPUFREQ_RELATION_H);
 		delay = dbs_info->freq_lo_jiffies;
 	}
+<<<<<<< HEAD
 	if (dbs_info->cur_policy != NULL)
 		trace_cpufreq_sampling_event(cpu,
 			dbs_info->cur_policy->cur,
@@ -990,6 +996,8 @@ static void do_dbs_timer(struct work_struct *work)
 		trace_cpufreq_sampling_event(cpu,
 			0, dbs_info->prev_load);
 
+=======
+>>>>>>> 5ade948... cpufreq: Use dedicated high-priority workqueues
 	queue_delayed_work_on(cpu, dbs_wq, &dbs_info->work, delay);
 	mutex_unlock(&dbs_info->timer_mutex);
 }
@@ -1090,8 +1098,13 @@ static int dbs_migration_notify(struct notifier_block *nb,
 	struct cpu_dbs_info_s *target_dbs_info =
 		&per_cpu(od_cpu_dbs_info, target_cpu);
 
+<<<<<<< HEAD
 	atomic_set(&target_dbs_info->src_sync_cpu, (int)arg);
 	wake_up(&target_dbs_info->sync_wq);
+=======
+	queue_work_on(target_cpu, dbs_wq,
+		&per_cpu(dbs_sync_work, target_cpu).work);
+>>>>>>> 5ade948... cpufreq: Use dedicated high-priority workqueues
 
 	return NOTIFY_OK;
 }
@@ -1202,7 +1215,11 @@ static void dbs_input_event(struct input_handle *handle, unsigned int type,
 	}
 
 	for_each_online_cpu(i)
+<<<<<<< HEAD
 		queue_work_on(i, dbs_wq, &per_cpu(dbs_refresh_work, i).work);
+=======
+		queue_work_on(i, dbs_wq, &per_cpu(dbs_refresh_work, i));
+>>>>>>> 5ade948... cpufreq: Use dedicated high-priority workqueues
 }
 
 static int dbs_input_connect(struct input_handler *handler,
@@ -1464,14 +1481,21 @@ static int __init cpufreq_gov_dbs_init(void)
 
 static void __exit cpufreq_gov_dbs_exit(void)
 {
+<<<<<<< HEAD
 	unsigned int i;
 
+=======
+	int i;
+>>>>>>> 5ade948... cpufreq: Use dedicated high-priority workqueues
 	cpufreq_unregister_governor(&cpufreq_gov_ondemand);
 	for_each_possible_cpu(i) {
 		struct cpu_dbs_info_s *this_dbs_info =
 			&per_cpu(od_cpu_dbs_info, i);
 		mutex_destroy(&this_dbs_info->timer_mutex);
+<<<<<<< HEAD
 		kthread_stop(this_dbs_info->sync_thread);
+=======
+>>>>>>> 5ade948... cpufreq: Use dedicated high-priority workqueues
 	}
 	destroy_workqueue(dbs_wq);
 }
