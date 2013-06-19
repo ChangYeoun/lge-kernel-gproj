@@ -499,65 +499,67 @@ unsigned int wcnss_get_serial_number(void)
 EXPORT_SYMBOL(wcnss_get_serial_number);
 
 static int enable_wcnss_suspend_notify;
-static int enable_wcnss_suspend_notify_set(const char *val,	
-struct kernel_param *kp)
+
+static int enable_wcnss_suspend_notify_set(const char *val,
+				struct kernel_param *kp)
 {
-       int ret;
-       ret = param_set_int(val, kp);
-       if (ret)	
-       return ret;	
-       if (enable_wcnss_suspend_notify)	
-             pr_debug("Suspend notification activated for wcnss\n");	
-      return 0;	
-}	
-module_param_call(enable_wcnss_suspend_notify, 
-enable_wcnss_suspend_notify_set,param_get_int, &enable_wcnss_suspend_notify, 
-S_IRUGO | S_IWUSR);
+	int ret;
 
-void wcnss_suspend_notify(void)
+	ret = param_set_int(val, kp);
+	if (ret)
+		return ret;
+
+	if (enable_wcnss_suspend_notify)
+		pr_info("Suspend notification activated for wcnss\n");
+
+	return 0;
+}
+module_param_call(enable_wcnss_suspend_notify, enable_wcnss_suspend_notify_set,
+		param_get_int, &enable_wcnss_suspend_notify, S_IRUGO | S_IWUSR);
+
+int wcnss_wlan_iris_xo_mode(void)
 {
-       void __iomem *pmu_spare_reg;
-       u32 reg = 0;
-       unsigned long flags;
+	if (!penv || !penv->pdev || !penv->smd_channel_ready)
+		return -ENODEV;
 
-       if (!enable_wcnss_suspend_notify)
-              return;
-//       if (wcnss_hardware_type() == WCNSS_PRONTO_HW)
-//             return;
-       /* For Riva */
-
-       pmu_spare_reg = penv->msm_wcnss_base + RIVA_SPARE_OFFSET;	
-       spin_lock_irqsave(&reg_spinlock, flags);	
-       reg = readl_relaxed(pmu_spare_reg);	
-       reg |= RIVA_SUSPEND_BIT;	
-       writel_relaxed(reg, pmu_spare_reg);	
-       spin_unlock_irqrestore(&reg_spinlock, flags);	
-}	
-EXPORT_SYMBOL(wcnss_suspend_notify);	
-
-void wcnss_resume_notify(void)	
-{	
-       void __iomem *pmu_spare_reg;	
-       u32 reg = 0;	
-       unsigned long flags;	
+	if (penv->wlan_config.use_48mhz_xo)
+		return WCNSS_XO_48MHZ;
+	else
+		return WCNSS_XO_19MHZ;
+}
+EXPORT_SYMBOL(wcnss_wlan_iris_xo_mode);
 
 
-       if (!enable_wcnss_suspend_notify)	
-            return;
+static void wcnss_suspend_notify(void)
+{
+	void __iomem *pmu_spare_reg;
+	u32 reg = 0;
+	unsigned long flags;
 
-//       if (wcnss_hardware_type() == WCNSS_PRONTO_HW)
-//            return;
+	/* For Riva */
+	pmu_spare_reg = penv->msm_wcnss_base + RIVA_SPARE_OFFSET;
 
-       /* For Riva */
-       pmu_spare_reg = penv->msm_wcnss_base + RIVA_SPARE_OFFSET;
+	spin_lock_irqsave(&reg_spinlock, flags);
+	reg = readl_relaxed(pmu_spare_reg);
+	reg |= RIVA_SUSPEND_BIT;
+	writel_relaxed(reg, pmu_spare_reg);
+	spin_unlock_irqrestore(&reg_spinlock, flags);
+}
 
-       spin_lock_irqsave(&reg_spinlock, flags);
-       reg = readl_relaxed(pmu_spare_reg);
-       reg &= ~RIVA_SUSPEND_BIT;
-       writel_relaxed(reg, pmu_spare_reg);
-       spin_unlock_irqrestore(&reg_spinlock, flags);
-}	
-EXPORT_SYMBOL(wcnss_resume_notify);
+static void wcnss_resume_notify(void)
+{
+	void __iomem *pmu_spare_reg;
+	u32 reg = 0;
+	unsigned long flags;
+
+	/* For Riva */
+	pmu_spare_reg = penv->msm_wcnss_base + RIVA_SPARE_OFFSET;
+	spin_lock_irqsave(&reg_spinlock, flags);
+	reg = readl_relaxed(pmu_spare_reg);
+	reg &= ~RIVA_SUSPEND_BIT;
+	writel_relaxed(reg, pmu_spare_reg);
+	spin_unlock_irqrestore(&reg_spinlock, flags);
+}
 
 static int wcnss_wlan_suspend(struct device *dev)
 {
