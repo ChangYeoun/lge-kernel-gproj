@@ -29,7 +29,16 @@ static struct msm_panel_common_pdata *mipi_lgit_pdata;
 
 static struct dsi_buf lgit_tx_buf;
 static struct dsi_buf lgit_rx_buf;
+<<<<<<< HEAD
 static int __init mipi_lgit_lcd_init(void);
+=======
+static struct msm_fb_data_type *local_mfd;
+static int skip_init;
+
+#ifdef CONFIG_GAMMA_CONTROL
+struct dsi_cmd_desc new_color_vals[33];
+#endif
+>>>>>>> 0165982... mipi_lgit: Check for panel off at shutdown
 
 #define DSV_ONBST 57
 
@@ -87,6 +96,7 @@ int mipi_lgit_lcd_ief_on(void)
 	int cnt = 0;
 	
 	mfd = platform_get_drvdata(pdev);
+	local_mfd = mfd;
 	if (!mfd)
 		return -ENODEV;
 	if (mfd->key != MFD_KEY)
@@ -200,8 +210,24 @@ int mipi_lgit_lcd_off_for_shutdown(void)
 {
     struct msm_fb_panel_data *pdata = NULL;
 
+<<<<<<< HEAD
     if(!local_mfd0 || !local_mfd0->panel_power_on)
         return -1;
+=======
+	if(local_mfd && !local_mfd->panel_power_on) {
+		pr_info("%s:panel is already off\n", __func__);
+		return;
+	}
+
+	MIPI_OUTP(MIPI_DSI_BASE + 0x38, 0x10000000);
+	ret = mipi_dsi_cmds_tx(&lgit_tx_buf,
+			mipi_lgit_pdata->power_off_set_1,
+			mipi_lgit_pdata->power_off_set_size_1);
+	MIPI_OUTP(MIPI_DSI_BASE + 0x38, 0x14000000);
+	if (ret < 0) {
+		pr_err("%s: failed to transmit power_off_set_1 cmds\n", __func__);
+	}
+>>>>>>> 0165982... mipi_lgit: Check for panel off at shutdown
 
     pdata = local_mfd0->pdev->dev.platform_data;
 
