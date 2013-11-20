@@ -17,11 +17,8 @@
 #include <linux/gfp.h>
 #include <linux/suspend.h>
 
-<<<<<<< HEAD
 #include <trace/events/sched.h>
-=======
 #include "smpboot.h"
->>>>>>> e871222... smp: patches from mainline 3.5 to hopefully help with hotplug
 
 #ifdef CONFIG_SMP
 /* Serializes the updates to cpu_online_mask, cpu_present_mask */
