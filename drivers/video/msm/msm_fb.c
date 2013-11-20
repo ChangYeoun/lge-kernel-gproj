@@ -2022,11 +2022,8 @@ int msm_fb_signal_timeline(struct msm_fb_data_type *mfd)
 		sw_sync_timeline_inc(mfd->timeline, 1);
 		mfd->timeline_value++;
 	}
-<<<<<<< HEAD
 	if (atomic_read(&mfd->commit_cnt) > 0)
 		atomic_dec(&mfd->commit_cnt);
-=======
->>>>>>> 169d1fd... msm: mdp: Update sync pt. behaviour
 	mutex_unlock(&mfd->sync_mutex);
 	return 0;
 }
@@ -2042,10 +2039,7 @@ void msm_fb_release_timeline(struct msm_fb_data_type *mfd)
 		sw_sync_timeline_inc(mfd->timeline, 2 + commit_cnt);
 		mfd->timeline_value += 2 + commit_cnt;
 	}
-<<<<<<< HEAD
 	atomic_set(&mfd->commit_cnt, 0);
-=======
->>>>>>> 169d1fd... msm: mdp: Update sync pt. behaviour
 	mutex_unlock(&mfd->sync_mutex);
 }
 
@@ -3986,30 +3980,20 @@ static int msmfb_handle_buf_sync_ioctl(struct msm_fb_data_type *mfd,
 	}
 
 	release_sync_pt = sw_sync_pt_create(mfd->timeline,
-<<<<<<< HEAD
 			mfd->timeline_value + threshold +
 			atomic_read(&mfd->commit_cnt));
-=======
-			mfd->timeline_value + threshold);
->>>>>>> 169d1fd... msm: mdp: Update sync pt. behaviour
 	release_fence = sync_fence_create("mdp-fence",
 			release_sync_pt);
 	sync_fence_install(release_fence, release_fen_fd);
 	retire_sync_pt = sw_sync_pt_create(mfd->timeline,
-<<<<<<< HEAD
 			mfd->timeline_value + threshold +
 			atomic_read(&mfd->commit_cnt) + 1);
-=======
-			mfd->timeline_value + threshold);
->>>>>>> 169d1fd... msm: mdp: Update sync pt. behaviour
 	retire_fence = sync_fence_create("mdp-retire-fence",
 			retire_sync_pt);
 	sync_fence_install(retire_fence, retire_fen_fd);
 
 	ret = copy_to_user(buf_sync->rel_fen_fd,
 		&release_fen_fd, sizeof(int));
-<<<<<<< HEAD
-=======
 	if (ret) {
 		pr_err("%s:copy_to_user failed", __func__);
 		goto buf_sync_err_3;
@@ -4017,22 +4001,11 @@ static int msmfb_handle_buf_sync_ioctl(struct msm_fb_data_type *mfd,
 
 	ret = copy_to_user(buf_sync->retire_fen_fd,
 		&retire_fen_fd, sizeof(int));
->>>>>>> 169d1fd... msm: mdp: Update sync pt. behaviour
 	if (ret) {
 		pr_err("%s:copy_to_user failed", __func__);
 		goto buf_sync_err_3;
 	}
 
-<<<<<<< HEAD
-	ret = copy_to_user(buf_sync->retire_fen_fd,
-		&retire_fen_fd, sizeof(int));
-	if (ret) {
-		pr_err("%s:copy_to_user failed", __func__);
-		goto buf_sync_err_3;
-	}
-
-=======
->>>>>>> 169d1fd... msm: mdp: Update sync pt. behaviour
 	mutex_unlock(&mfd->sync_mutex);
 	return ret;
 buf_sync_err_3:
