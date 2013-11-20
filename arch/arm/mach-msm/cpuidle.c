@@ -75,10 +75,7 @@ static int msm_cpuidle_enter(
 		}
 	}
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 7fe37ce... msm: pm: send notification only for SPC and PC
 	local_irq_enable();
 
 	return ret;
