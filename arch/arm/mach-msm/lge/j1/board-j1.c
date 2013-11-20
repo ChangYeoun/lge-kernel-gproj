@@ -754,6 +754,7 @@ static void __init apq8064_reserve(void)
 		}
 #endif
 	}
+	limit_mem_reserve();
 }
 
 static void __init apq8064_early_reserve(void)
